@@ -1,198 +1,166 @@
-import requests
-from shiny import reactive, render
-from shiny.express import input
-from shiny.express import ui
-import pandas as pd
-import os
-import matplotlib.pyplot as plt
+from ipyleaflet import Map, Marker, Polyline, TileLayer, basemaps
+from faicons import icon_svg
+from geopy.distance import geodesic, great_circle
+from shiny import reactive
+from shiny.express import input, render, ui
+from shinywidgets import render_widget
 
-# Import external CSS for Font Awesome icons
-ui.tags.link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css")
+# Define sample city data (CITIES) and BASEMAPS
+CITIES = {
+    "Louisiana": {"latitude": 30.9843, "longitude": -91.9623, "altitude": 10},
+    "Missouri": {"latitude": 38.5739, "longitude": -92.6038, "altitude": 214},
+    "Ross Sea (Adélie Penguins)": {"latitude": -77.5, "longitude": 163.5, "altitude": 0},
+    "Antarctic Peninsula (Adélie Penguins)": {"latitude": -64.0, "longitude": -60.0, "altitude": 0},
+    "South Shetland Islands (Chinstrap Penguins)": {"latitude": -62.0, "longitude": -58.0, "altitude": 0},
+    "Antarctic Peninsula (Chinstrap Penguins)": {"latitude": -63.0, "longitude": -57.0, "altitude": 0},
+    "Falkland Islands (Gentoo Penguins)": {"latitude": -51.7, "longitude": -59.0, "altitude": 0},
+    "South Georgia (Gentoo Penguins)": {"latitude": -54.5, "longitude": -36.0, "altitude": 0},
+}
 
-# Load the CSV file
-file_path = "https://github.com/kersha0530/cintel-06-custom/blob/main/exercise.csv"
-if os.path.exists(file_path):
-    exercise_data = pd.read_csv(file_path)
-else:
-    exercise_data = pd.DataFrame()
+BASEMAPS = {
+    "WorldImagery": basemaps.Esri.WorldImagery,
+    "Mapnik": basemaps.OpenStreetMap.Mapnik,
+}
 
-if exercise_data.empty:
-    print("The exercise data is empty. Please check the file path or file contents.")
-else:
-    print("The exercise data has been successfully loaded.")
+# Define penguin colonies data
+penguin_colonies = {
+    "Adélie Penguins": [("Ross Sea", -77.5, 163.5), ("Antarctic Peninsula", -64.0, -60.0)],
+    "Chinstrap Penguins": [("South Shetland Islands", -62.0, -58.0), ("Antarctic Peninsula", -63.0, -57.0)],
+    "Gentoo Penguins": [("Falkland Islands", -51.7, -59.0), ("South Georgia", -54.5, -36.0)],
+}
 
-# Set page options
-ui.page_opts(title="Kersha's Fitness App", fillable=True)
+# Flatten colony names for user selection
+colony_names = [f"{species} - {colony[0]}" for species, colonies in penguin_colonies.items() for colony in colonies]
+city_names = sorted(list(CITIES.keys()))
 
-# Add CSS for styling
-ui.tags.style("""
-    body {
-        background-color: lavender;
-        font-family: 'Roboto', sans-serif;
-        color: #4B0082;
-    }
-    h2, p {
-        font-weight: bold;
-        color: #4B0082;
-    }
-    .center-img {
-        display: block;
-        margin: auto;
-        width: 150px;
-    }
-    .text-center {
-        text-align: center;
-    }
-    .slider, select, .shiny-input {
-        width: 100%;
-        color: #4B0082;
-        font-weight: bold;
-    }
-    .slider-label {
-        color: #4B0082;
-        font-weight: bold;
-    }
-    .links a {
-        color: #4B0082;
-        font-weight: bold;
-        display: block;
-        margin-bottom: 10px;
-    }
-    .plot-image {
-        width: 100%;
-        max-width: 800px;
-        height: auto;
-        display: block;
-        margin: auto;
-    }
-    .card {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 20px;
-        background-color: white;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-    }
-""")
+ui.page_opts(title="Location and Penguin Colony Distance Calculator", fillable=True)
 
-# Sidebar content
-with ui.sidebar(open="open"):
-    ui.h2("Kersha's Fitness App", class_="text-center")
-    ui.div(
-        ui.HTML("""
-            <iframe src="https://d1csarkz8obe9u.cloudfront.net/index.php/posterbuilder/view/06717d7c5b2c186c75c84073b19caed0/1" 
-                    style="height: 150px; width:100%; border:none;"></iframe>
-        """),
-        class_="center-img"
-    )
-    ui.div(ui.input_slider("time", "Select Time Interval", min=1, max=30, value=15, step=1, animate=True), class_="bold")
-    ui.div(ui.input_select("diet", "Select Diet", choices=["Lowfat", "No Fat"]), class_="bold")
-    ui.div(ui.input_select("kind", "Select Exercise Type", choices=["Rest", "Walking", "Running"]), class_="bold")
-    ui.div(
-        ui.h6("Links:", class_="bold"),
-        ui.a(ui.tags.i(class_="fab fa-github", style="font-size: 1.5em; color: black;"), 
-             "GitHub - The Exercise App", href="https://github.com/your-repository-link", target="_blank"),
-        ui.a(ui.tags.i(class_="fas fa-shield-alt", style="font-size: 1.5em; color: darkblue;"), 
-             "PyShiny Documentation", href="https://shiny.posit.co/py/", target="_blank"),
-        class_="links"
-    )
-ui.h2("Personalize Your Fitness Metrics", class_="text-center")
-# Icons for visual interest
-ui.div(
-    # Blue Dumbbell
-    ui.tags.i(class_="fas fa-dumbbell text-center", style="font-size: 8em; color: blue;"),
-    # Green Running Icon
-    ui.tags.i(class_="fas fa-running text-center", style="font-size: 8em; color: green;"),
-    # Red Heartbeat Icon
-    ui.tags.i(class_="fas fa-heartbeat text-center", style="font-size: 8em; color: red;"),
-    # Purple Dumbbell Icon (added here)
-    ui.tags.i(class_="fas fa-dumbbell text-center", style="font-size: 8em; color: purple;"),
-    # Additional icons if needed (you can add more icons similarly)
-    ui.tags.i(class_="fas fa-bicycle text-center", style="font-size: 8em; color: orange;"),
-    class_="d-flex justify-content-around"  # Using flexbox to ensure icons are spaced and aligned
-)
+with ui.sidebar():
+    ui.input_selectize("loc1", "Location 1", choices=city_names, selected="New York")
+    ui.input_selectize("loc2", "Location 2", choices=city_names, selected="London")
+    ui.input_selectize("penguin_colony", "Penguin Colony", choices=colony_names, selected=colony_names[0])
+    ui.input_selectize("basemap", "Choose a basemap", choices=list(BASEMAPS.keys()), selected="WorldImagery")
+    ui.input_dark_mode(mode="dark")
 
+with ui.layout_column_wrap(fill=False):
+    with ui.value_box(showcase=icon_svg("globe"), theme="gradient-blue-indigo"):
+        "Great Circle Distance"
+        @render.text
+        def great_circle_dist():
+            circle = great_circle(loc1xy(), loc2xy())
+            return f"{circle.kilometers.__round__(1)} km"
 
-# Instructions
-ui.p("Select the desired options to view exercise data and trends.", class_="text-center")
+    with ui.value_box(showcase=icon_svg("ruler"), theme="gradient-blue-indigo"):
+        "Geodesic Distance"
+        @render.text
+        def geo_dist():
+            dist = geodesic(loc1xy(), loc2xy())
+            return f"{dist.kilometers.__round__(1)} km"
 
-# Function to plot exercise data
-def plot_exercise_data(filtered_data, kind):
-    plt.figure(figsize=(10, 5))
-    if kind == "Running":
-        plt.plot(filtered_data["time"], filtered_data["time"], marker='o', label="Exercise Time (Running)")
-    else:
-        plt.plot(filtered_data["time"], filtered_data["time"], marker='o', label=f"Exercise Time ({kind})")
-    plt.title(f'{kind} Exercise Trends')
-    plt.xlabel('Time (minutes)')
-    plt.ylabel('Time (minutes)')
-    plt.grid()
-    plt.tight_layout()
-    plot_path = 'C:/Users/kbrou/OneDrive/Pictures/exercise_plot.png'
-    plt.savefig(plot_path)
-    plt.close()
-    return plot_path
+    with ui.value_box(showcase=icon_svg("snowflake"), theme="gradient-blue-indigo"):
+        "Distance to Penguin Colony"
+        @render.text
+        def penguin_dist():
+            selected_colony = input.penguin_colony().split(" - ")
+            species = selected_colony[0]
+            colony_name = selected_colony[1]
+            for colony in penguin_colonies[species]:
+                if colony[0] == colony_name:
+                    colony_location = (colony[1], colony[2])
+                    break
+            distance = geodesic(loc1xy(), colony_location).kilometers
+            return f"{distance.__round__(1)} km to {colony_name} ({species})"
 
-# Reactive function to update data based on selections
+with ui.card():
+    ui.card_header("Map (drag the markers to change locations)")
+    @render_widget
+    def map():
+        return Map(zoom=4, center=(0, 0))
+
+# Reactive values to store location information
+loc1 = reactive.value()
+loc2 = reactive.value()
+
+@reactive.effect
+def _():
+    loc1.set(CITIES.get(input.loc1(), loc_str_to_coords(input.loc1())))
+    loc2.set(CITIES.get(input.loc2(), loc_str_to_coords(input.loc2())))
+
+# Helper function to convert location strings to coordinates
+def loc_str_to_coords(x: str) -> dict:
+    latlon = x.split(", ")
+    if len(latlon) != 2:
+        return {}
+    lat, lon = map(float, latlon)
+    return {"latitude": lat, "longitude": lon, "altitude": None}
+
 @reactive.calc
-def reactive_calc():
-    time_range = input.slider("time")  # Directly access the slider value
-    kind = input.select("kind")  # Directly access the select value
-    filtered_data = exercise_data[exercise_data['time'] <= time_range]
-    selected_data = filtered_data[filtered_data['kind'] == kind]
-    return plot_exercise_data(selected_data, kind)
+def loc1xy():
+    return loc1()["latitude"], loc1()["longitude"]
 
-
-# New: Calculate calories burned (simplified)
 @reactive.calc
-def calories_burned():
-    time_range = input.slider("time")  # Directly access the slider value
-    kind = input.select("kind")  # Directly access the select value
+def loc2xy():
+    return loc2()["latitude"], loc2()["longitude"]
 
-    # Simplified formula: calories burned = time * calories per minute based on exercise type
-    if kind == "Running":
-        calories_per_minute = 10  # Example value for running
-    elif kind == "Walking":
-        calories_per_minute = 5  # Example value for walking
-    else:
-        calories_per_minute = 0  # No calories burned during rest
-    
-    total_calories = time_range * calories_per_minute
-    return f"Calories Burned: {total_calories} kcal"
+@reactive.effect
+def _():
+    update_marker(map.widget, loc1xy(), on_move1, "loc1")
 
-# New: Calculate heart rate (simplified)
-@reactive.calc
-def heart_rate():
-    kind = input.select("kind")  # Directly access the select value
-    
-    # Example heart rate logic based on exercise type
-    if kind == "Running":
-        hr = 150  # Average heart rate for running
-    elif kind == "Walking":
-        hr = 120  # Average heart rate for walking
-    else:
-        hr = 80  # Average heart rate for resting
-    
-    return f"Heart Rate: {hr} bpm"
+@reactive.effect
+def _():
+    update_marker(map.widget, loc2xy(), on_move2, "loc2")
 
+@reactive.effect
+def _():
+    update_line(map.widget, loc1xy(), loc2xy())
 
-# Layout with two columns and cards for placeholders (using div and Bootstrap classes)
-ui.div(
-    ui.div(
-        ui.div(
-            ui.h3("Placeholder 1", class_="text-center"),
-            ui.p("This is a placeholder for the first content card."),
-            class_="card"
-        ),
-        class_="col-6"  # Bootstrap column for half-width
-    ),
-    ui.div(
-        ui.div(
-            ui.h3("Placeholder 2", class_="text-center"),
-            ui.p("This is a placeholder for the second content card."),
-            class_="card"
-        ),
-        class_="col-6"  # Bootstrap column for half-width
-    ),
-    class_="row"  # Bootstrap row class to align columns horizontally
-)
+@reactive.effect
+def _():
+    l1 = loc1xy()
+    l2 = loc2xy()
+    lat_rng = [min(l1[0], l2[0]), max(l1[0], l2[0])]
+    lon_rng = [min(l1[1], l2[1]), max(l1[1], l2[1])]
+    new_bounds = [[lat_rng[0], lon_rng[0]], [lat_rng[1], lon_rng[1]]]
+    b = map.widget.bounds
+    if len(b) == 0:
+        map.widget.fit_bounds(new_bounds)
+    elif (lat_rng[0] < b[0][0] or lat_rng[1] > b[1][0] or lon_rng[0] < b[0][1] or lon_rng[1] > b[1][1]):
+        map.widget.fit_bounds(new_bounds)
+
+@reactive.effect
+def _():
+    update_basemap(map.widget, input.basemap())
+
+# Map helper functions
+def update_marker(map: Map, loc: tuple, on_move: object, name: str):
+    remove_layer(map, name)
+    m = Marker(location=loc, draggable=True, name=name)
+    m.on_move(on_move)
+    map.add_layer(m)
+
+def update_line(map: Map, loc1: tuple, loc2: tuple):
+    remove_layer(map, "line")
+    map.add_layer(Polyline(locations=[loc1, loc2], color="blue", weight=2, name="line"))
+
+def update_basemap(map: Map, basemap: str):
+    for layer in map.layers:
+        if isinstance(layer, TileLayer):
+            map.remove_layer(layer)
+    map.add_layer((BASEMAPS[input.basemap()]))
+
+def remove_layer(map: Map, name: str):
+    for layer in map.layers:
+        if layer.name == name:
+            map.remove_layer(layer)
+
+def on_move1(**kwargs):
+    return on_move("loc1", **kwargs)
+
+def on_move2(**kwargs):
+    return on_move("loc2", **kwargs)
+
+def on_move(id, **kwargs):
+    loc = kwargs["location"]
+    loc_str = f"{loc[0]}, {loc[1]}"
+    choices = city_names + [loc_str]
+    ui.update_selectize(id, selected=loc_str, choices=choices)
