@@ -73,7 +73,7 @@ The Palmer Penguins dataset includes:
 * The map includes a selection of cities and Antarctic penguin colonies for distance calculations.
 * Distance Calculations
   
-# Calculate and display:
+ ## Calculate and display:
 
 * Great Circle Distance between two locations.
 * Geodesic Distance as the shortest path between two points.
@@ -81,11 +81,11 @@ The Palmer Penguins dataset includes:
 * Basemap Options
 * Choose between WorldImagery and Mapnik for different map views.
 
-# Penguin Dataset Exploration
-# Explore the filtered Palmer Penguins dataset using the following visualization options:
+ Penguin Dataset Exploration
+### Explore the filtered Palmer Penguins dataset using the following visualization options:
 
-# Penguin Attributes
-Filter by:
+* Penguin Attributes
+## Filter by:
 
 * Species, Island, Flipper Length, Bill Depth, Bill Length, Body Mass, and Sex.
 # Visualization Options
