@@ -30,6 +30,9 @@ This interactive Shiny app provides a dual exploration platform for a map-based 
 # Getting Started
 Prerequisites: Install necessary packages.
 
+
+
+
 bash
 Copy code
 ## pip install plotly palmerpenguins pandas matplotlib seaborn shiny shinywidgets geopy ipyleaflet faicons
