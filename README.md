@@ -27,17 +27,17 @@ This interactive Shiny app provides a dual exploration platform for a map-based 
 * Scatterplot
 * Seaborn Histogram
 
-## Getting Started
+# Getting Started
 Prerequisites: Install necessary packages.
 
 bash
 Copy code
-pip install plotly palmerpenguins pandas matplotlib seaborn shiny shinywidgets geopy ipyleaflet faicons
+## pip install plotly palmerpenguins pandas matplotlib seaborn shiny shinywidgets geopy ipyleaflet faicons
 Run the App:
 
 bash
 Copy code
-shiny run app.py
+## shiny run app.py
 Access the Interface: Open the Shiny app in your browser to start exploring.
 
 # Data Dictionary
@@ -68,7 +68,7 @@ The Palmer Penguins dataset includes:
 * City and Penguin Colony Locations
 * The map includes a selection of cities and Antarctic penguin colonies for distance calculations.
 * Distance Calculations
-* 
+  
 # Calculate and display:
 
 * Great Circle Distance between two locations.
@@ -78,14 +78,14 @@ The Palmer Penguins dataset includes:
 * Choose between WorldImagery and Mapnik for different map views.
 
 # Penguin Dataset Exploration
-## Explore the filtered Palmer Penguins dataset using the following visualization options:
+# Explore the filtered Palmer Penguins dataset using the following visualization options:
 
-- Penguin Attributes
+# Penguin Attributes
 Filter by:
 
 * Species, Island, Flipper Length, Bill Depth, Bill Length, Body Mass, and Sex.
-* Visualization Options
-* The following panels provide insights into penguin data distributions:
+# Visualization Options
+ The following panels provide insights into penguin data distributions:
 
 * Filtered Table: Displays data based on the filtered criteria.
 * Histogram: Plotly histogram of flipper lengths, color-coded by species.
