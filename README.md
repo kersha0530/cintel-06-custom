@@ -3,21 +3,21 @@
 This interactive Shiny app provides a dual exploration platform for a map-based location distance calculator and the Palmer Penguins dataset. Users can analyze distances between specific locations on a map, including penguin colonies, and filter penguin species attributes for detailed statistical plots and visualizations.
 
 ## Table of Contents
-Features
-Getting Started
-Data Dictionary
-Usage Instructions
-Map Application Details
-City and Penguin Colony Locations
-Distance Calculations
-Basemap Options
-Penguin Dataset Exploration
-Penguin Attributes
-Visualization Options
-Customization
-Contributing
-License
-Features
+# Features
+# Getting Started
+# Data Dictionary
+# Usage Instructions
+# Map Application Details
+# City and Penguin Colony Locations
+# Distance Calculations
+# Basemap Options
+# Penguin Dataset Exploration
+# Penguin Attributes
+# Visualization Options
+# Customization
+# Contributing
+# License
+# Features
 
 * Interactive map with draggable markers for location-based distance calculations.
 * Dark-themed user interface for a professional and accessible user experience.
@@ -67,8 +67,8 @@ The Palmer Penguins dataset includes:
 # Map Application Details
 * City and Penguin Colony Locations
 * The map includes a selection of cities and Antarctic penguin colonies for distance calculations.
-
-## Distance Calculations
+* Distance Calculations
+* 
 # Calculate and display:
 
 * Great Circle Distance between two locations.
@@ -77,10 +77,10 @@ The Palmer Penguins dataset includes:
 * Basemap Options
 * Choose between WorldImagery and Mapnik for different map views.
 
-## Penguin Dataset Exploration
-# Explore the filtered Palmer Penguins dataset using the following visualization options:
+# Penguin Dataset Exploration
+## Explore the filtered Palmer Penguins dataset using the following visualization options:
 
-## Penguin Attributes
+- Penguin Attributes
 Filter by:
 
 * Species, Island, Flipper Length, Bill Depth, Bill Length, Body Mass, and Sex.
@@ -91,11 +91,11 @@ Filter by:
 * Histogram: Plotly histogram of flipper lengths, color-coded by species.
 * Scatterplot: Flipper length vs. bill length.
 * Seaborn Histogram: Distribution of body mass by species.
-## Customization
+# Customization
 Modify the CITIES and BASEMAPS dictionaries within the script to update locations and basemap choices.
 Adjust visualization and filtering options by changing parameters in the UI.
-## Contributing
+# Contributing
 Contributions are welcome! Please follow standard coding conventions, document any changes, and submit a pull request.
 
-## License
+# License
 This project is licensed under the MIT License.
