@@ -35,10 +35,9 @@ This application combines map-based distance calculations with interactive data 
 ### Prerequisites
 Ensure you have the following packages installed:
 
-```bash
-pip install plotly palmerpenguins pandas matplotlib seaborn shiny shinywidgets geopy ipyleaflet faicons
+```bash pip install plotly palmerpenguins pandas matplotlib seaborn shiny shinywidgets geopy ipyleaflet faicons``` 
 
-shiny run app.py
+```bash shiny run app.py``` 
 
 
 Access the Interface: Open the Shiny app in your browser to start exploring.
