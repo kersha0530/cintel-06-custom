@@ -1,46 +1,46 @@
 # cintel-06-custom
-# Map and Penguin Dataset Exploration
-This interactive Shiny app provides a dual exploration platform for a map-based location distance calculator and the Palmer Penguins dataset. Users can analyze distances between specific locations on a map, including penguin colonies, and filter penguin species attributes for detailed statistical plots and visualizations.
+## Map and Penguin Dataset Exploration
+
+This interactive Shiny app offers a dual platform for exploring both a map-based location distance calculator and the Palmer Penguins dataset. Users can calculate distances between locations on a map, including penguin colonies, and filter penguin attributes for statistical analysis and visualizations.
 
 ## Table of Contents
-# Features
-# Getting Started
-# Data Dictionary
-# Usage Instructions
-# Map Application Details
-# City and Penguin Colony Locations
-# Distance Calculations
-# Basemap Options
-# Penguin Dataset Exploration
-# Penguin Attributes
-# Visualization Options
-# Customization
-# Contributing
-# License
-# Features
+- [Introduction](#introduction)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Data Dictionary](#data-dictionary)
+  - [Map Location Data](#map-location-data)
+  - [Penguin Dataset Attributes](#penguin-dataset-attributes)
+- [Usage Instructions](#usage-instructions)
+  - [Map Application Details](#map-application-details)
+  - [Penguin Dataset Exploration](#penguin-dataset-exploration)
+- [Customization](#customization)
+- [Contributing](#contributing)
+- [License](#license)
 
-* Interactive map with draggable markers for location-based distance calculations.
-* Dark-themed user interface for a professional and accessible user experience.
-* Detailed sidebar options for selecting city or colony locations and filtering penguin dataset attributes.
-* Multiple visualization panels for exploring filtered data:
-* Histogram
-* Scatterplot
-* Seaborn Histogram
+## Introduction
 
-# Getting Started
-Prerequisites: Install necessary packages.
+This application combines map-based distance calculations with interactive data exploration for the Palmer Penguins dataset. Ideal for visualizing geographical and statistical information in one app, it features a professional dark theme for accessibility and user experience.
+
+## Features
+- **Interactive Map**: Draggable markers for distance calculations between locations.
+- **Penguin Dataset Exploration**: Multiple filters and visualizations for analyzing penguin species data.
+- **Dark Theme**: A visually accessible and professional interface.
+- **Visualization Options**:
+  - Histogram
+  - Scatterplot
+  - Seaborn Histogram
+
+## Getting Started
+
+### Prerequisites
+Ensure you have the following packages installed:
+
+```bash
+pip install plotly palmerpenguins pandas matplotlib seaborn shiny shinywidgets geopy ipyleaflet faicons
+
+shiny run app.py
 
 
-
-
-bash
-Copy code
-## pip install plotly palmerpenguins pandas matplotlib seaborn shiny shinywidgets geopy ipyleaflet faicons
-Run the App:
-
-bash
-Copy code
-## shiny run app.py
 Access the Interface: Open the Shiny app in your browser to start exploring.
 
 # Data Dictionary
@@ -102,3 +102,9 @@ Contributions are welcome! Please follow standard coding conventions, document a
 
 # License
 This project is licensed under the MIT License.
+
+### Additional Notes
+- **Clickable Links in README**: In Markdown, using `[]()` creates clickable links, as shown in the Table of Contents.
+- **Underlining Text**: Markdown does not natively support underlining, so bold (`**text**`) or italic (`*text*`) styling is typically used instead.
+
+
