@@ -40,13 +40,14 @@ Copy code
 shiny run app.py
 Access the Interface: Open the Shiny app in your browser to start exploring.
 
-## Data Dictionary
-Map Location Data
-The map app includes predefined city locations as well as specific Antarctic penguin colony locations:
+# Data Dictionary
+* Map Location Data
+* The map app includes predefined city locations as well as specific Antarctic penguin colony locations:
 
-## Cities: Louisiana, Missouri, New York, Biscoe Island, Dream Island, Torgersen Island
-## Penguin Colonies: Ross Sea (Adélie Penguins), Antarctic Peninsula (Chinstrap Penguins), Falkland Islands (Gentoo Penguins), and more.
-*Penguin Dataset Attributes
+* Cities: Louisiana, Missouri, New York, Biscoe Island, Dream Island, Torgersen Island
+* Penguin Colonies: Ross Sea (Adélie Penguins), Antarctic Peninsula (Chinstrap Penguins), Falkland Islands (Gentoo Penguins), and more.
+  
+# Penguin Dataset Attributes
 The Palmer Penguins dataset includes:
 
 * Species: Adelie, Chinstrap, Gentoo
