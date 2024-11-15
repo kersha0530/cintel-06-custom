@@ -3,7 +3,7 @@
 
 This interactive Shiny app offers a dual platform for exploring both a map-based location distance calculator and the Palmer Penguins dataset. Users can calculate distances between locations on a map, including penguin colonies, and filter penguin attributes for statistical analysis and visualizations.
 
-<u>## Table of Contents</u>
+## Table of Contents
 - [Introduction](#introduction)
 - [Features](#features)
 - [Getting Started](#getting-started)
