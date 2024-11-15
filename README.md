@@ -3,7 +3,7 @@
 
 This interactive Shiny app offers a dual platform for exploring both a map-based location distance calculator and the Palmer Penguins dataset. Users can calculate distances between locations on a map, including penguin colonies, and filter penguin attributes for statistical analysis and visualizations.
 
-## Table of Contents
+<u> ## Table of Contents </u>
 - [Introduction](#introduction)
 - [Features](#features)
 - [Getting Started](#getting-started)
@@ -103,9 +103,3 @@ Contributions are welcome! Please follow standard coding conventions, document a
 
 # License
 This project is licensed under the MIT License.
-
-### Additional Notes
-- **Clickable Links in README**: In Markdown, using `[]()` creates clickable links, as shown in the Table of Contents.
-- **Underlining Text**: Markdown does not natively support underlining, so bold (`**text**`) or italic (`*text*`) styling is typically used instead.
-
-
