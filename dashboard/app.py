@@ -8,6 +8,7 @@ from shiny.express import input, render, ui
 from shinywidgets import render_plotly, render_widget
 from geopy.distance import geodesic, great_circle
 from ipyleaflet import Map, basemaps, Marker, TileLayer, Polyline, basemap_to_tiles
+from faicons import icon_svg
 
 # Sample city and BASEMAP data
 CITIES = {
@@ -36,15 +37,63 @@ penguins_df = palmerpenguins.load_penguins()
 # UI Setup
 ui.page_opts(title="Map and Penguin Dataset Exploration", fillable=True)
 
-with ui.sidebar(bg="#333", style="color: #fff;"):
-    # Centered header instructions
-    ui.div("Select a penguin species from the list provided and choose destinations for locations 1 and 2 to customize The Interactive Map application.",
-           style="text-align:center; padding:10px; font-weight:bold; color:#ffffff;"),
+with ui.sidebar(bg="#333", style="color: #fff; padding: 15px;"):
+    # Instructions Section
+    ui.div(
+        """
+        **Map Application:**
+        - Select two locations to calculate distances, either by choosing cities or penguin colony sites.
+        - Choose a basemap option to customize the view.
+        
+        """,
+        style="margin-bottom: 20px; color: #fff; font-size: 14px;",
+    )
+
+    # Full-Size Value Boxes at the top of the sidebar
+    with ui.layout_column_wrap(fill=False, style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 20px;"):
+        # Value Box 1: Great Circle Distance
+        with ui.value_box(theme="gradient-blue-indigo"):
+            "Great Circle Distance"
+            @render.text
+            def great_circle_dist():
+                loc1 = (CITIES[input.loc1()]["latitude"], CITIES[input.loc1()]["longitude"])
+                loc2 = (CITIES[input.loc2()]["latitude"], CITIES[input.loc2()]["longitude"])
+                circle = great_circle(loc1, loc2)
+                return f"{circle.kilometers.__round__(1)} km"
+
+        # Value Box 2: Geodesic Distance
+        with ui.value_box(theme="gradient-blue-indigo"):
+            "Geodesic Distance"
+            @render.text
+            def geo_dist():
+                loc1 = (CITIES[input.loc1()]["latitude"], CITIES[input.loc1()]["longitude"])
+                loc2 = (CITIES[input.loc2()]["latitude"], CITIES[input.loc2()]["longitude"])
+                dist = geodesic(loc1, loc2)
+                return f"{dist.kilometers.__round__(1)} km"
+
+        # Value Box 3: Altitude Difference
+        with ui.value_box(theme="gradient-blue-indigo"):
+            "Altitude Difference"
+            @render.text
+            def altitude_diff():
+                try:
+                    alt_diff = CITIES[input.loc1()]["altitude"] - CITIES[input.loc2()]["altitude"]
+                    return f"{alt_diff} m"
+                except TypeError:
+                    return "N/A"
+        
+    # Sidebar Input Elements
     ui.input_selectize("loc1", "Location 1", choices=list(CITIES.keys()), selected="Louisiana")
     ui.input_selectize("loc2", "Location 2", choices=list(CITIES.keys()), selected="Biscoe Island")
     ui.input_selectize("basemap", "Choose a basemap", choices=list(BASEMAPS.keys()), selected="WorldImagery")
-    ui.div("For an interactive exploration of Antarctic penguins, choose the attributes of the penguin and consult the panel's plots and histograms to visualize how your selection is represented.",
-           style="text-align:center; padding:10px; font-weight:bold; color:#ffffff;"),
+    ui.div(
+            """
+         **Penguin Exploration:**
+        - Set specific attributes in the sidebar to filter penguin data.
+        - Explore via histograms, scatterplots, and seaborn histograms.
+        """,
+        style="margin-bottom: 20px; color: #fff; font-size: 14px;",
+    )
     ui.input_selectize("selected_species_list", "Select Species", ["Adelie", "Gentoo", "Chinstrap"], multiple=True)
     ui.input_selectize("selected_island_list", "Select Island", ["Biscoe", "Dream", "Torgersen"], multiple=True)
     ui.input_slider("flipper_length_mm", "Flipper length (mm)", 150, 250, (150, 250))
