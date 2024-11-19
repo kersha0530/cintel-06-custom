@@ -100,6 +100,13 @@ Weather data in blue value boxes (current temperature for both locations).
 * Penguin Exploration:
   -Set specific attributes in the sidebar to filter penguin data and explore via visualizations in the "Filtered Table," "Histogram," and "Scatterplot" tabs.
 
+# Weather Data Integration
+API Integration
+* The app uses the OpenWeatherMap API to fetch real-time weather data. It calculates and displays:
+
+- Temperature for Location 1 (e.g., Louisiana).
+- Temperature for Location 2 (e.g., Biscoe Island).
+
   
 # Map Application Details
 * City and Penguin Colony Locations
