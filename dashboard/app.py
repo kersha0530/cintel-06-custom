@@ -10,6 +10,22 @@ from geopy.distance import geodesic, great_circle
 from ipyleaflet import Map, basemaps, Marker, TileLayer, Polyline, basemap_to_tiles
 from faicons import icon_svg
 
+
+
+# OpenWeatherMap API key
+API_KEY = '4cc0a30163a9737128eb144e1f8d0d84'
+
+# Fetch current temperature for a given location using OpenWeatherMap
+def get_current_temperature(latitude, longitude):
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={API_KEY}&units=metric"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        return data['main']['temp']
+    except Exception as e:
+        return "N/A"
+
 # Sample city and BASEMAP data
 CITIES = {
     "Louisiana": {"latitude": 30.9843, "longitude": -91.9623, "altitude": 10},
@@ -50,9 +66,10 @@ with ui.sidebar(bg="#333", style="color: #fff; padding: 15px;"):
     )
 
     # Full-Size Value Boxes at the top of the sidebar
-    with ui.layout_column_wrap(fill=False, style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 20px;"):
+    ui.div("Geospatial Data", style="color: #fff; font-weight: bold; margin-bottom: 10px;")
+    with ui.layout_column_wrap(fill=False, style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;"):
         # Value Box 1: Great Circle Distance
-        with ui.value_box(theme="gradient-blue-indigo"):
+        with ui.value_box(theme="gradient-purple"):
             "Great Circle Distance"
             @render.text
             def great_circle_dist():
@@ -62,7 +79,7 @@ with ui.sidebar(bg="#333", style="color: #fff; padding: 15px;"):
                 return f"{circle.kilometers.__round__(1)} km"
 
         # Value Box 2: Geodesic Distance
-        with ui.value_box(theme="gradient-blue-indigo"):
+        with ui.value_box(theme="gradient-purple"):
             "Geodesic Distance"
             @render.text
             def geo_dist():
@@ -72,7 +89,7 @@ with ui.sidebar(bg="#333", style="color: #fff; padding: 15px;"):
                 return f"{dist.kilometers.__round__(1)} km"
 
         # Value Box 3: Altitude Difference
-        with ui.value_box(theme="gradient-blue-indigo"):
+        with ui.value_box(theme="gradient-purple"):
             "Altitude Difference"
             @render.text
             def altitude_diff():
@@ -81,6 +98,27 @@ with ui.sidebar(bg="#333", style="color: #fff; padding: 15px;"):
                     return f"{alt_diff} m"
                 except TypeError:
                     return "N/A"
+
+    # Weather Data
+    ui.div("Weather Data", style="color: #fff; font-weight: bold; margin-bottom: 10px;")
+    with ui.layout_column_wrap(fill=False, style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;"):
+        # Temperature for Location 1
+        with ui.value_box(theme="gradient-blue-indigo"):
+            "Location 1 Temperature"
+            @render.text
+            def loc1_temperature():
+                loc1 = CITIES[input.loc1()]
+                temp = get_current_temperature(loc1["latitude"], loc1["longitude"])
+                return f"{temp}°C" if temp != "N/A" else "Unavailable"
+
+        # Temperature for Location 2
+        with ui.value_box(theme="gradient-blue-indigo"):
+            "Location 2 Temperature"
+            @render.text
+            def loc2_temperature():
+                loc2 = CITIES[input.loc2()]
+                temp = get_current_temperature(loc2["latitude"], loc2["longitude"])
+                return f"{temp}°C" 
         
     # Sidebar Input Elements
     ui.input_selectize("loc1", "Location 1", choices=list(CITIES.keys()), selected="Louisiana")
