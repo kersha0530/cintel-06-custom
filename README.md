@@ -17,9 +17,27 @@ This interactive Shiny app offers a dual platform for exploring both a map-based
 - [Contributing](#contributing)
 - [License](#license)
 
+  # Dependencies
+Python 3.8+
+Libraries:
+* shiny
+* shinywidgets
+* plotly
+* matplotlib
+* seaborn
+* requests
+* geopy
+* ipyleaflet
+
 ## Introduction
 
-This application combines map-based distance calculations with interactive data exploration for the Palmer Penguins dataset. Ideal for visualizing geographical and statistical information in one app, it features a professional dark theme for accessibility and user experience.
+This application combines map-based distance calculations with interactive data exploration for the Palmer Penguins dataset. Ideal for visualizing geographical and statistical information in one app, it features a professional dark theme for accessibility and user experience.=
+The Map and Penguin Dataset Exploration App allows users to interactively explore geospatial relationships, penguin data, and real-time weather information. 
+Key features include:
+
+* Calculating geospatial metrics (e.g., Great Circle Distance, Geodesic Distance, Altitude Difference).
+* Filtering and visualizing penguin data using histograms, scatterplots, and interactive tables.
+* Displaying real-time weather data for selected locations.
 
 ## Features
 - **Interactive Map**: Draggable markers for distance calculations between locations.
@@ -29,6 +47,8 @@ This application combines map-based distance calculations with interactive data 
   - Histogram
   - Scatterplot
   - Seaborn Histogram
+  - **Real-Time Weather Data Integration**
+This app integrates weather data using the OpenWeatherMap API. Users can view the current temperature for the two selected locations.
 
 ## Getting Started
 
@@ -39,7 +59,16 @@ Ensure you have the following packages installed:
 ```pip install plotly palmerpenguins pandas matplotlib seaborn shiny shinywidgets geopy ipyleaflet faicons``` 
 
 * bash 
-```shiny run app.py``` 
+```shiny run app.py```
+
+Obtain an OpenWeatherMap API key:
+* Sign up at OpenWeatherMap.
+* Add the API key to the app.py file:
+* API Rate Limits
+The free OpenWeatherMap API tier allows limited requests. If you encounter issues fetching data, consider upgrading your API plan or caching responses.
+
+```python```
+API_KEY = 'your_api_key_here'
 
 
 Access the Interface: Open the Shiny app in your browser to start exploring.
@@ -64,9 +93,13 @@ The Palmer Penguins dataset includes:
   
 # Usage Instructions
 * Map Application:
- -Select two locations to calculate distances, either by choosing cities or penguin colony sites. Choose a basemap option to customize the view.
+ -Select two locations from the dropdown menus in the sidebar to calculate distances, either by choosing cities or penguin colony sites. Choose a basemap option to customize the view.
+  View:
+Geospatial data in purple value boxes (e.g., distances, altitude difference).
+Weather data in blue value boxes (current temperature for both locations).
 * Penguin Exploration:
-  -Set specific attributes in the sidebar to filter penguin data and explore via histograms, scatterplots, and seaborn histograms.
+  -Set specific attributes in the sidebar to filter penguin data and explore via visualizations in the "Filtered Table," "Histogram," and "Scatterplot" tabs.
+
   
 # Map Application Details
 * City and Penguin Colony Locations
