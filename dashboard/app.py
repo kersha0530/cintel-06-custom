@@ -3,6 +3,7 @@ import palmerpenguins
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import requests
 from shiny import reactive
 from shiny.express import input, render, ui
 from shinywidgets import render_plotly, render_widget
@@ -10,21 +11,8 @@ from geopy.distance import geodesic, great_circle
 from ipyleaflet import Map, basemaps, Marker, TileLayer, Polyline, basemap_to_tiles
 from faicons import icon_svg
 
-
-
 # OpenWeatherMap API key
 API_KEY = '4cc0a30163a9737128eb144e1f8d0d84'
-
-# Fetch current temperature for a given location using OpenWeatherMap
-def get_current_temperature(latitude, longitude):
-    url = f"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={API_KEY}&units=metric"
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
-        return data['main']['temp']
-    except Exception as e:
-        return "N/A"
 
 # Sample city and BASEMAP data
 CITIES = {
@@ -49,6 +37,97 @@ BASEMAPS = {
 
 # Load the Palmer Penguins dataset
 penguins_df = palmerpenguins.load_penguins()
+
+
+# Fetch current temperature for a given location using OpenWeatherMap
+def get_current_temperature(latitude, longitude):
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={API_KEY}&units=metric"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        return data['main']['temp']
+    except Exception as e:
+        return "N/A"
+
+# Function to create the map
+def create_map():
+    map_obj = Map(zoom=4, center=(20, 0))  # Center at an approximate global midpoint
+    
+    # Retrieve location data from the user inputs
+    loc1_data = CITIES[input.loc1()]
+    loc2_data = CITIES[input.loc2()]
+    
+    # Add markers for Location 1 and Location 2
+    loc1_marker = Marker(location=(loc1_data["latitude"], loc1_data["longitude"]), draggable=True)
+    loc2_marker = Marker(location=(loc2_data["latitude"], loc2_data["longitude"]), draggable=True)
+    map_obj.add_layer(loc1_marker)
+    map_obj.add_layer(loc2_marker)
+    
+    # Add a line connecting Location 1 and Location 2
+    line = Polyline(
+        locations=[
+            (loc1_data["latitude"], loc1_data["longitude"]),
+            (loc2_data["latitude"], loc2_data["longitude"]),
+        ],
+        color="blue",
+        weight=2,
+    )
+    map_obj.add_layer(line)
+    
+    # Set the basemap based on user selection
+    basemap_choice = input.basemap()
+    if basemap_choice in BASEMAPS:
+        map_obj.add_layer(basemap_to_tiles(BASEMAPS[basemap_choice]))
+    
+    return map_obj
+
+@reactive.Calc
+def filtered_data():
+    # Create a copy of the dataset to filter
+    data = penguins_df.copy()
+    
+    # Apply filters based on user input
+    if input.selected_species_list():
+        data = data[data['species'].isin(input.selected_species_list())]
+    if input.selected_island_list():
+        data = data[data['island'].isin(input.selected_island_list())]
+    
+    # Filter by flipper length
+    flipper_length = input.flipper_length_mm
+    if isinstance(flipper_length, list) and len(flipper_length) == 2:
+        data = data[
+            (data['flipper_length_mm'] >= flipper_length[0]) &
+            (data['flipper_length_mm'] <= flipper_length[1])
+        ]
+    
+    # Filter by other attributes
+    if input.bill_depth_mm:
+        bill_depth = input.bill_depth_mm
+        data = data[
+            (data['bill_depth_mm'] >= bill_depth[0]) &
+            (data['bill_depth_mm'] <= bill_depth[1])
+        ]
+    
+    if input.bill_length_mm:
+        bill_length = input.bill_length_mm
+        data = data[
+            (data['bill_length_mm'] >= bill_length[0]) &
+            (data['bill_length_mm'] <= bill_length[1])
+        ]
+    
+    if input.body_mass_g:
+        body_mass = input.body_mass_g
+        data = data[
+            (data['body_mass_g'] >= body_mass[0]) &
+            (data['body_mass_g'] <= body_mass[1])
+        ]
+    
+    if input.sex():
+        data = data[data['sex'] == input.sex()]
+    
+    return data
+
 
 # UI Setup
 ui.page_opts(title="Map and Penguin Dataset Exploration", fillable=True)
@@ -118,9 +197,9 @@ with ui.sidebar(bg="#333", style="color: #fff; padding: 15px;"):
             def loc2_temperature():
                 loc2 = CITIES[input.loc2()]
                 temp = get_current_temperature(loc2["latitude"], loc2["longitude"])
-                return f"{temp}°C" 
-        
-    # Sidebar Input Elements
+                return f"{temp}°C" if temp != "N/A" else "Unavailable"
+
+   # Sidebar Input Elements
     ui.input_selectize("loc1", "Location 1", choices=list(CITIES.keys()), selected="Louisiana")
     ui.input_selectize("loc2", "Location 2", choices=list(CITIES.keys()), selected="Biscoe Island")
     ui.input_selectize("basemap", "Choose a basemap", choices=list(BASEMAPS.keys()), selected="WorldImagery")
